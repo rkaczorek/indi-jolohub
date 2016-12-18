@@ -1,0 +1,13 @@
+Before compiling Astrohub driver install libindi-dev
+# sudo apt-get install libindi-dev
+
+Compile Astrohub driver
+# git clone https://github.com/rkaczorek/indi-astrohub
+# cd indi-astrohub
+# mkdir build
+# cd build
+# cmake ..
+# make
+# make install
+
+DONE
