@@ -32,6 +32,7 @@ Second, download and install indi-astrohub.
 
 Compiling from source:
 ```
+sudo apt-get install indilib-dev
 git clone https://github.com/rkaczorek/indi-astrohub.git
 cd indi-astrohub
 mkdir build
@@ -42,8 +43,8 @@ make install
 ```
 Installing from binaries:
 ```
-wget indi-astrohub-*.deb
-dpkg -i indi-astrohub-*.deb
+wget https://github.com/rkaczorek/indi-astrohub/raw/master/binaries/indi-astrohub-latest.deb
+dpkg -i indi-astrohub-latest.deb
 ```
 
 #How to use it?
