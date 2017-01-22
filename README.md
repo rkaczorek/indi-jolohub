@@ -43,8 +43,8 @@ make install
 ```
 Installing from binaries:
 ```
-wget https://github.com/rkaczorek/indi-astrohub/raw/master/binaries/indi-astrohub-latest.deb
-dpkg -i indi-astrohub-latest.deb
+wget https://github.com/rkaczorek/indi-astrohub/raw/master/binaries/indi-astrohub_0.1-1_armhf.deb
+dpkg -i indi-astrohub_0.1-1_armhf.deb
 ```
 
 #How to use it?
