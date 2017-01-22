@@ -1,6 +1,6 @@
 <devGroup group="Auxiliary">
-        <device label="Jolo Astrohub">
-                <driver name="Jolo Astrohub">indi_astrohub</driver>
+        <device label="Jolo AstroHub">
+                <driver name="Jolo AstroHub">indi_astrohub</driver>
                 <version>0.1</version>
         </device>
 </devGroup>
