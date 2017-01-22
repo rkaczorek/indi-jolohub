@@ -100,7 +100,7 @@ bool IndiAstrohub::Connect()
 		return false;
 	}
 
-	// set tty params	
+	// set tty params
 	struct termios tty;
 	tty.c_cflag = BAUDRATE | CS8 | CLOCAL | CREAD;
 	tty.c_iflag = IGNPAR;
@@ -117,7 +117,7 @@ bool IndiAstrohub::Connect()
 	}
 
 	SetTimer(TIMERDELAY);
-	
+
     IDMessage(getDeviceName(), "AstroHub connected successfully.");
     return true;
 }
@@ -141,10 +141,10 @@ void IndiAstrohub::TimerHit()
 		// sensor 0 temperature : sensor 0 humidity : sensor 0 dew point : sensor 1 temperature : sensor 1 humidity : sensor 1 dew point : sensor 2 temperature : sensor 2 humidity : sensor 2 dew point : pwm 0 : pwm 1 : pwm 2 : pwm 3 : DC out 0 : DC out 1 : DC out 2 : DC out 3 : input voltage : regulated voltage : 5V voltage : energy consumed in Ah : energy consumed in Wh : DC motor in move :
 		// if MLX sensor is not connected response ends here
 		// ambient temperature : sky temperature
-		
+
 		char * pch;
 		char * sensor[32];
-		
+
 		pch = strtok (info,":");
 		int index = 0;
 		while (pch != NULL)
@@ -203,7 +203,7 @@ void IndiAstrohub::TimerHit()
 			Sensor1N[2].value = atof(sensor[8]);
 			Sensor1NP.s=IPS_OK;
 			IDSetNumber(&Sensor1NP, NULL);
-			
+
 			Sensor2NP.s=IPS_BUSY;
 			IDSetNumber(&Sensor2NP, NULL);
 			Sensor2N[0].value = atof(sensor[9]);
@@ -211,34 +211,34 @@ void IndiAstrohub::TimerHit()
 			Sensor2N[2].value = atof(sensor[11]);
 			Sensor2NP.s=IPS_OK;
 			IDSetNumber(&Sensor2NP, NULL);
-			
+
 			Sensor3NP.s=IPS_BUSY;
 			IDSetNumber(&Sensor3NP, NULL);
 			Sensor3N[0].value = atof(sensor[12]);
 			Sensor3NP.s=IPS_OK;
 			IDSetNumber(&Sensor3NP, NULL);
-			
+
 			// update values of various controls
 			Focus1AbsPosN[0].value = atof(sensor[1]);
-			IDSetNumber(&Focus1AbsPosNP, NULL);			
+			IDSetNumber(&Focus1AbsPosNP, NULL);
 			Focus2AbsPosN[0].value = atof(sensor[3]);
 			IDSetNumber(&Focus2AbsPosNP, NULL);
 			PWM1N[0].value = atof(sensor[18]);
-			IDSetNumber(&PWM1NP, NULL);			
+			IDSetNumber(&PWM1NP, NULL);
 			PWM2N[0].value = atof(sensor[19]);
-			IDSetNumber(&PWM2NP, NULL);			
+			IDSetNumber(&PWM2NP, NULL);
 			PWM3N[0].value = atof(sensor[20]);
-			IDSetNumber(&PWM3NP, NULL);			
+			IDSetNumber(&PWM3NP, NULL);
 			PWM4N[0].value = atof(sensor[21]);
-			IDSetNumber(&PWM4NP, NULL);			
-		}		
-		
+			IDSetNumber(&PWM4NP, NULL);
+		}
+
 		SetTimer(TIMERDELAY);
     }
 }
 const char * IndiAstrohub::getDefaultName()
 {
-        return (char *)"AstroHub";
+        return (char *)"Jolo AstroHub";
 }
 bool IndiAstrohub::initProperties()
 {
@@ -313,7 +313,7 @@ bool IndiAstrohub::initProperties()
 
     IUFillNumber(&Sensor3N[0],"SENSOR3_TEMP","Temperature [C]","%0.0f",0,100,0,0);
     IUFillNumberVector(&Sensor3NP,Sensor3N,1,getDeviceName(),"SENSOR3","Sensor 3","Sensors",IP_RO,60,IPS_OK);	
-	
+
 	// pwm
     IUFillNumber(&PWM1N[0],"PWM1_VAL","Value","%0.0f",0,100,10,0);
     IUFillNumberVector(&PWM1NP,PWM1N,1,getDeviceName(),"PWM1","PWM 1","PWM",IP_RW,60,IPS_OK);
@@ -381,7 +381,7 @@ bool IndiAstrohub::updateProperties()
 		deleteProperty(PWM3NP.name);
 		deleteProperty(PWM4NP.name);
     }
-    
+
     return true;
 }
 void IndiAstrohub::ISGetProperties(const char *dev)
@@ -400,11 +400,11 @@ bool IndiAstrohub::ISNewNumber (const char *dev, const char *name, double values
 		if (!strcmp(name, Focus1AbsPosNP.name))
 		{
 			IUUpdateNumber(&Focus1AbsPosNP,values,names,n);
-						
+
 			char stepval[8];
 			char newval[8];
 			sprintf(stepval, "R:0:%0.0f", Focus1AbsPosN[0].value);
-			serialCom(stepval);			
+			serialCom(stepval);
 			sprintf(newval, "p:%0.0f", Focus1AbsPosN[0].value);
 
 			// loop until new position is reached
@@ -413,7 +413,7 @@ bool IndiAstrohub::ISNewNumber (const char *dev, const char *name, double values
 				IDMessage(getDeviceName(), "Focuser 1 moving to the position...");
 				usleep(100 * 1000);
 			}
-			
+
 			// if reached new position update client
 			if (!strcmp(serialCom("p:0"),newval))
 			{
@@ -452,7 +452,7 @@ bool IndiAstrohub::ISNewNumber (const char *dev, const char *name, double values
 				IDMessage(getDeviceName(), "Focuser 1 moving to the position...");
 				usleep(100 * 1000);
 			}
-			
+
 			// if reached new position update client
 			if (!strcmp(serialCom("p:0"),newval))
 			{
@@ -472,7 +472,7 @@ bool IndiAstrohub::ISNewNumber (const char *dev, const char *name, double values
 			char stepval[8];
 			char newval[8];
 			sprintf(stepval, "R:1:%0.0f", Focus2AbsPosN[0].value);
-			serialCom(stepval);			
+			serialCom(stepval);
 			sprintf(newval, "p:%0.0f", Focus2AbsPosN[0].value);
 
 			// loop until new position is reached
@@ -481,7 +481,7 @@ bool IndiAstrohub::ISNewNumber (const char *dev, const char *name, double values
 				IDMessage(getDeviceName(), "Focuser 2 moving to the position...");
 				usleep(100 * 1000);
 			}
-			
+
 			// if reached new position update client
 			if (!strcmp(serialCom("p:1"),newval))
 			{
@@ -520,7 +520,7 @@ bool IndiAstrohub::ISNewNumber (const char *dev, const char *name, double values
 				IDMessage(getDeviceName(), "Focuser 2 moving to the position...");
 				usleep(100 * 1000);
 			}
-			
+
 			// if reached new position update client
 			if (!strcmp(serialCom("p:1"),newval))
 			{
@@ -537,20 +537,20 @@ bool IndiAstrohub::ISNewNumber (const char *dev, const char *name, double values
 		{
 			IUUpdateNumber(&Focus3StepNP,values,names,n);
 			IDSetNumber(&Focus3StepNP, NULL);
-			
+
 			char stepval[10];
 			int direction;
-			
+
 			if (Focus3MotionS[0].s == ISS_ON)
 			{
 				direction = 0;
 			} else {
 				direction = 1;
 			}
-			
+
 			sprintf(stepval, "G:%d:%0.0f:%0.0f", direction, Focus3SpeedN[0].value, Focus3StepN[0].value);
 			serialCom(stepval);
-			
+
 			// loop until new position is reached
 			while ( strcmp(serialCom("g"), "g:0") )
 			{
@@ -566,7 +566,7 @@ bool IndiAstrohub::ISNewNumber (const char *dev, const char *name, double values
 			IUUpdateNumber(&Focus3SpeedNP,values,names,n);
 			IDSetNumber(&Focus3SpeedNP, NULL);
 			return true;
-		}			
+		}
 		// handle PWM1
 		if (!strcmp(name, PWM1NP.name))
 		{
@@ -641,7 +641,7 @@ bool IndiAstrohub::ISNewNumber (const char *dev, const char *name, double values
 			} else {
 				return false;
 			}
-		}		
+		}
 	}
 	return INDI::DefaultDevice::ISNewNumber(dev,name,values,names,n);
 }
@@ -699,7 +699,7 @@ bool IndiAstrohub::ISNewSwitch (const char *dev, const char *name, ISState *stat
 			IDSetSwitch(&Power2SP, NULL);
 			return true;
 		}
-		
+
 		// handle power line 3
 		if (!strcmp(name, Power3SP.name))
 		{
@@ -834,10 +834,10 @@ char* IndiAstrohub::serialCom(const char* input)
 
 	// write command
 	write(fd, command, strlen(command));
-	
+
 	// delay
 	usleep(200 * 1000);
-	
+
 	// read response
 	int res = read(fd, buffer, 255);
 	buffer[res] = 0;
@@ -847,9 +847,9 @@ char* IndiAstrohub::serialCom(const char* input)
 
 	// format output 
 	sprintf(output, "%s", buffer);
-	
+
 	// debug response
 	IDLog("AstroHub Input: [%s] (length: %d), AstroHub Output: [%s] (length: %d)\n", input, (int)strlen(input), output, (int)strlen(output));
-	
+
 	return output;
 }
