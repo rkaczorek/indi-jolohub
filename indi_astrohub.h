@@ -54,6 +54,8 @@ private:
 	INumberVectorProperty Focus2AbsPosNP;
 	ISwitch Focus3MotionS[2];
 	ISwitchVectorProperty Focus3MotionSP;
+	INumber Focus3SpeedN[1];
+	INumberVectorProperty Focus3SpeedNP;
 	INumber Focus3StepN[1];
 	INumberVectorProperty Focus3StepNP;
 	INumber Sensor1N[3];

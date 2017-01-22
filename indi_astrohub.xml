@@ -1,7 +1,7 @@
 <devGroup group="Auxiliary">
         <device label="Astrohub">
                 <driver name="Astrohub">indi_astrohub</driver>
-                <version>1.0</version>
+                <version>0.1</version>
         </device>
 </devGroup>
 
