@@ -24,9 +24,11 @@
 #include <stdio.h>
 #include <string.h>
 #include <memory>
-#include "indi_astrohub.h"
+#include "indi_jolohub.h"
 
-#define BAUDRATE B115200 // AstroHub serial line speed
+#define VERSION_MAJOR 0
+#define VERSION_MINOR 2
+
 #define TIMERDELAY 3000 // 3s delay for sensors readout
 #define MAX_STEPS 10000 // maximum steppers' value
 
@@ -83,50 +85,33 @@ void ISSnoopDevice (XMLEle *root)
 }
 IndiAstrohub::IndiAstrohub()
 {
-	setVersion(0,1);
+	setVersion(VERSION_MAJOR,VERSION_MINOR);
 }
 IndiAstrohub::~IndiAstrohub()
 {
 }
-bool IndiAstrohub::Connect()
+bool IndiAstrohub::Handshake()
 {
-	// open device
-	fd = open(PortT[0].text, O_RDWR | O_NOCTTY | O_NDELAY);
 
-	// check serial connection
-    if(fd < 0 || !isatty(fd))
-	{
-		IDMessage(getDeviceName(), "Error connecting to serial port.");
-		return false;
+	if (isSimulation()) {
+		IDMessage(getDeviceName(), "Simulation: connected");
+		PortFD = 1;
+	} else {
+		// get port
+		PortFD = serialConnection->getPortFD();
+		
+		// check device
+		if(strcmp(serialCom("#"), "#:Jolo AstroHub") != 0)
+		{
+			IDMessage(getDeviceName(), "Device not recognized. It is not Jolo AstroHub.");
+			return false;
+		}
+
+		SetTimer(TIMERDELAY);
+
+		IDMessage(getDeviceName(), "AstroHub connected successfully.");
 	}
 
-	// set tty params
-	struct termios tty;
-	tty.c_cflag = BAUDRATE | CS8 | CLOCAL | CREAD;
-	tty.c_iflag = IGNPAR;
-	tty.c_oflag = 0;
-	tty.c_lflag = ICANON;
-	tcflush(fd, TCIFLUSH);
-	tcsetattr(fd,TCSANOW,&tty);
-
-	// check device
-    if(strcmp(serialCom("#"), "#:Jolo AstroHub") != 0)
-	{
-		IDMessage(getDeviceName(), "AstroHub is not available.");
-		return false;
-	}
-
-	SetTimer(TIMERDELAY);
-
-    IDMessage(getDeviceName(), "AstroHub connected successfully.");
-    return true;
-}
-bool IndiAstrohub::Disconnect()
-{
-	// close device
-	close(fd);
-
-    IDMessage(getDeviceName(), "AstroHub disconnected successfully.");
     return true;
 }
 void IndiAstrohub::TimerHit()
@@ -245,10 +230,8 @@ bool IndiAstrohub::initProperties()
     // We init parent properties first
     INDI::DefaultDevice::initProperties();
 
-	// port
-    IUFillText(&PortT[0], "PORT", "Port","/dev/ttyACM0");
-    IUFillTextVector(&PortTP,PortT,1,getDeviceName(),"DEVICE_PORT","Ports",MAIN_CONTROL_TAB,IP_RW,0,IPS_OK);
-	defineText(&PortTP);
+	// addDebugControl();
+	addSimulationControl();
 
 	// power lines
     IUFillSwitch(&Power1S[0], "PWR1BTN_ON", "ON", ISS_OFF);
@@ -326,6 +309,13 @@ bool IndiAstrohub::initProperties()
 
     IUFillNumber(&PWM4N[0],"PWM4_VAL","Value","%0.0f",0,100,10,0);
     IUFillNumberVector(&PWM4NP,PWM4N,1,getDeviceName(),"PWM4","PWM 4","PWM",IP_RW,60,IPS_OK);
+
+    serialConnection = new Connection::Serial(this);
+    serialConnection->registerHandshake([&]() { return Handshake();});
+	registerConnection(serialConnection);
+
+	serialConnection->setDefaultPort("/dev/ttyACM0");
+//	serialConnection->setDefaultBaudRate(B_115200);
 
     return true;
 }
@@ -780,18 +770,6 @@ bool IndiAstrohub::ISNewSwitch (const char *dev, const char *name, ISState *stat
 }
 bool IndiAstrohub::ISNewText (const char *dev, const char *name, char *texts[], char *names[], int n)
 {
-    if (!strcmp(dev, getDeviceName()))
-    {
-		// handle serial device
-		if (!strcmp(name, PortTP.name))
-		{
-			IUUpdateText(&PortTP, texts, names, n);
-			PortTP.s=IPS_OK;
-			IDSetText(&PortTP, NULL);
-			return true;
-		}
-	}
-
 	return INDI::DefaultDevice::ISNewText (dev, name, texts, names, n);
 }
 bool IndiAstrohub::ISNewBLOB (const char *dev, const char *name, int sizes[], int blobsizes[], char *blobs[], char *formats[], char *names[], int n)
@@ -822,24 +800,17 @@ char* IndiAstrohub::serialCom(const char* input)
 	char buffer[255];
 	char* output = new char[255];
 
-	// check serial connection
-    if(fd < 0 || !isatty(fd))
-	{
-		IDMessage(getDeviceName(), "Error communicating to serial port.");
-		return NULL;
-	}
-
 	// format input
 	sprintf(command, "%s\n", input);
 
 	// write command
-	write(fd, command, strlen(command));
+	write(PortFD, command, strlen(command));
 
 	// delay
 	usleep(200 * 1000);
 
 	// read response
-	int res = read(fd, buffer, 255);
+	int res = read(PortFD, buffer, 255);
 	buffer[res] = 0;
 
 	// remove line feed
@@ -849,7 +820,7 @@ char* IndiAstrohub::serialCom(const char* input)
 	sprintf(output, "%s", buffer);
 
 	// debug response
-	IDLog("AstroHub Input: [%s] (length: %d), AstroHub Output: [%s] (length: %d)\n", input, (int)strlen(input), output, (int)strlen(output));
+	// IDLog("AstroHub Input: [%s] (length: %d), AstroHub Output: [%s] (length: %d)\n", input, (int)strlen(input), output, (int)strlen(output));
 
 	return output;
 }

@@ -24,14 +24,13 @@
 #include <stdio.h>
 
 #include <defaultdevice.h>
+#include <connectionplugins/connectionserial.h>
 
 class IndiAstrohub : public INDI::DefaultDevice
 {
 protected:
 private:
 	int counter;
-	IText PortT[2];
-	ITextVectorProperty PortTP;
 	ISwitch Power1S[2];
 	ISwitchVectorProperty Power1SP;
 	ISwitch Power2S[2];
@@ -79,8 +78,7 @@ public:
 	virtual const char *getDefaultName();
 
 	virtual void TimerHit();
-	virtual bool Connect();
-	virtual bool Disconnect();
+	virtual bool Handshake();
 	virtual bool initProperties();
 	virtual bool updateProperties();
 	virtual void ISGetProperties(const char *dev);
@@ -90,7 +88,8 @@ public:
 	virtual bool ISNewBLOB (const char *dev, const char *name, int sizes[], int blobsizes[], char *blobs[], char *formats[], char *names[], int n);
 	virtual bool ISSnoopDevice(XMLEle *root);
 	virtual bool saveConfigItems(FILE *fp);
-	int fd;
+	int PortFD=-1;
+	Connection::Serial *serialConnection=NULL;
 	virtual char* serialCom(const char* input);
 };
 

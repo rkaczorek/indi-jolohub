@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 2.4.7)
-PROJECT(indi-astrohub CXX C)
+PROJECT(indi-jolohub CXX C)
 
-set (VERSION_MAJOR 1)
-set (VERSION_MINOR 0)
+set (VERSION_MAJOR 0)
+set (VERSION_MINOR 2)
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules/")
 set(BIN_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/bin")
@@ -15,14 +15,14 @@ include_directories( ${CMAKE_CURRENT_BINARY_DIR})
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR})
 include_directories( ${INDI_INCLUDE_DIR})
 
-################ PiFace Board ################
+################ JoloHub ################
 
-set(indi_astrohub_SRCS
-        ${CMAKE_CURRENT_SOURCE_DIR}/indi_astrohub.cpp
+set(indi_jolohub_SRCS
+        ${CMAKE_CURRENT_SOURCE_DIR}/indi_jolohub.cpp
    )
 
-add_executable(indi_astrohub ${indi_astrohub_SRCS})
-target_link_libraries(indi_astrohub indidriver)
-install(TARGETS indi_astrohub RUNTIME DESTINATION bin )
-install(FILES indi_astrohub.xml DESTINATION ${INDI_DATA_DIR})
+add_executable(indi_jolohub ${indi_jolohub_SRCS})
+target_link_libraries(indi_jolohub indidriver)
+install(TARGETS indi_jolohub RUNTIME DESTINATION bin )
+install(FILES indi_jolohub.xml DESTINATION ${INDI_DATA_DIR})
 
