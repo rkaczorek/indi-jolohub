@@ -1,4 +1,4 @@
-# indi-astrohub
+# indi-jolohub
 Astrohub driver provides support for [AstroHub 3.0](http://astrojolo.blogspot.com/p/astrohub-30.html), which can handle:
 - 2x stepper motors Robofocus compatible
 - 1x DC motor Skywatcher motofocus compatible
@@ -28,28 +28,23 @@ sudo apt-add-repository ppa:mutlaqja/ppa
 sudo apt-get update
 sudo apt-get install libindi1
 ```
-Second, download and install indi-astrohub.
+Second, download and install indi-jolohub.
 
 Compiling from source:
 ```
 sudo apt-get install indilib-dev
-git clone https://github.com/rkaczorek/indi-astrohub.git
-cd indi-astrohub
+git clone https://github.com/rkaczorek/indi-jolohub.git
+cd indi-jolohub
 mkdir build
 cd build
 cmake ..
 make
 make install
 ```
-Installing from binaries:
-```
-wget https://github.com/rkaczorek/indi-astrohub/raw/master/binaries/indi-astrohub_0.1-1_armhf.deb
-dpkg -i indi-astrohub_0.1-1_armhf.deb
-```
 
 #How to use it?
 Start your INDI server with Astrohub drivers:
 
-`indiserver -l /var/log/indi -f /var/run/indi -p 7624 indi_astrohub`
+`indiserver -l /var/log/indi -f /var/run/indi -p 7624 indi_jolohub`
 
 Start KStars with Ekos, connect to your INDI server and enjoy!
